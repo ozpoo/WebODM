@@ -4,16 +4,35 @@ version: '2.1'
 volumes:
   dbdata:
   appmedia:
+  db-data:
+  pgadmin-data:
 services:
   db:
     image: opendronemap/webodm_db
     container_name: db
+    environment:
+     POSTGRES_DB: postgres_db
+     POSTGRES_USER: admin
+     POSTGRES_PASSWORD: secret
+     PGDATA: /var/lib/postgresql/data
     ports:
-      - "5432"
+      - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data:Z
-    restart: unless-stopped
+    restart: always
     oom_score_adj: -100
+  pgadmin:
+   container_name: pgadmin4_container
+   image: dpage/pgadmin4:5.5
+   restart: always
+   environment:
+     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+     PGADMIN_DEFAULT_PASSWORD: secret
+     PGADMIN_LISTEN_PORT: 80
+   ports:
+     - "8080:80"
+   volumes:
+     - pgadmin-data:/var/lib/pgadmin
   webapp:
     image: opendronemap/webodm_webapp
     container_name: webapp

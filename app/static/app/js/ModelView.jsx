@@ -23,7 +23,7 @@ class SetCameraView extends React.Component{
 
     constructor(props){
         super(props);
-        
+
         this.state = {
             error: "",
             showOk: false
@@ -56,8 +56,8 @@ class SetCameraView extends React.Component{
     }
 
     render(){
-        return ([<input key="btn" type="button" onClick={this.handleClick} 
-                    style={{marginBottom: 12, display: 'inline-block'}} name="set_camera_view" 
+        return ([<input key="btn" type="button" onClick={this.handleClick}
+                    style={{marginBottom: 12, display: 'inline-block'}} name="set_camera_view"
                     value={_("set initial camera view")} />,
                 this.state.showOk ? (<div key="ok" style={{color: 'lightgreen', display: 'inline-block', marginLeft: 12}}>✓</div>) : "",
                 this.state.error ? (<div key="error" style={{color: 'red'}}>{this.state.error}</div>) : ""
@@ -77,7 +77,7 @@ class TexturedModelMenu extends React.Component{
         this.state = {
             showTexturedModel: false
         }
-        
+
         // Translation for sidebar.html
         _("Cameras");
     }
@@ -88,8 +88,8 @@ class TexturedModelMenu extends React.Component{
     }
 
     render(){
-        return (<label><input 
-                            type="checkbox" 
+        return (<label><input
+                            type="checkbox"
                             checked={this.state.showTexturedModel}
                             onChange={this.handleClick}
                         /> {_("Show Model")}</label>);
@@ -115,8 +115,8 @@ class CamerasMenu extends React.Component{
     }
 
     render(){
-        return (<label><input 
-                            type="checkbox" 
+        return (<label><input
+                            type="checkbox"
                             checked={this.state.showCameras}
                             onChange={this.handleClick}
                         /> {_("Show Cameras")}</label>);
@@ -152,7 +152,7 @@ class ModelView extends React.Component {
 
     this.toggleTexturedModel = this.toggleTexturedModel.bind(this);
     this.toggleCameras = this.toggleCameras.bind(this);
-    
+
 
     this.cameraMeshes = [];
   }
@@ -209,11 +209,11 @@ class ModelView extends React.Component {
         getGeoOffsetFromUrl(geoFile);
     });
 
-    
+
   }
 
   pointCloudFilePath = (cb) => {
-    // Check if entwine point cloud exists, 
+    // Check if entwine point cloud exists,
     // otherwise fallback to potree point cloud binary format path
     const entwinePointCloud = this.assetsPath() + '/entwine_pointcloud/ept.json';
     const potreePointCloud = this.assetsPath() + '/potree_pointcloud/cloud.js';
@@ -242,7 +242,7 @@ class ModelView extends React.Component {
 
   objFilePath(cb){
     // Mostly for backward compatibility
-    // as newer versions of ODM do not have 
+    // as newer versions of ODM do not have
     // a odm_textured_model.obj
     const geoUrl = this.texturedModelDirectoryPath() + 'odm_textured_model_geo.obj';
     const nongeoUrl = this.texturedModelDirectoryPath() + 'odm_textured_model.obj';
@@ -259,7 +259,7 @@ class ModelView extends React.Component {
 
   mtlFilename(cb){
     // Mostly for backward compatibility
-    // as newer versions of ODM do not have 
+    // as newer versions of ODM do not have
     // a odm_textured_model.mtl
     const geoUrl = this.texturedModelDirectoryPath() + 'odm_textured_model_geo.mtl';
 
@@ -295,7 +295,8 @@ class ModelView extends React.Component {
     viewer.setPointBudget(1*1000*1000);
     viewer.setEDLEnabled(true);
     viewer.loadSettingsFromURL();
-        
+    viewer.setLengthUnit('ft');
+
     viewer.loadGUI(() => {
       viewer.setLanguage('en');
       $("#menu_tools").next().show();
@@ -335,11 +336,11 @@ class ModelView extends React.Component {
             this.setState({error: "Could not load point cloud. This task doesn't seem to have one. Try processing the task again."});
             return;
           }
-    
+
           let scene = viewer.scene;
           scene.addPointCloud(e.pointcloud);
           this.pointCloud = e.pointcloud;
-    
+
           let material = e.pointcloud.material;
           material.size = 1;
 
@@ -362,7 +363,7 @@ class ModelView extends React.Component {
             for (let k of keepKeys){
                 sceneData[k] = localSceneData[k];
             }
-            
+
             for (let k in localSceneData){
                 if (keepKeys.indexOf(k) === -1){
                     sceneData[k] = sceneData[k] || localSceneData[k];
@@ -384,13 +385,13 @@ class ModelView extends React.Component {
             let saveSceneInterval = null;
             let saveSceneErrors = 0;
             let prevSceneData = JSON.stringify(this.getSceneData());
-            
+
             const postSceneData = (sceneData) => {
                 if (saveSceneReq){
                     saveSceneReq.abort();
                     saveSceneReq = null;
                 }
-    
+
                 saveSceneReq = $.ajax({
                     url: `/api/projects/${this.props.task.project}/tasks/${this.props.task.id}/3d/scene`,
                     contentType: 'application/json',
@@ -413,7 +414,7 @@ class ModelView extends React.Component {
             const checkScene = () => {
                 const sceneData = JSON.stringify(this.getSceneData());
                 if (sceneData !== prevSceneData) postSceneData(sceneData);
-                
+
                 // Potree is a bit strange, sometimes fitToScreen does
                 // not work, so we check whether the camera position is still
                 // at zero and recall fitToScreen
@@ -430,27 +431,27 @@ class ModelView extends React.Component {
 
     viewer.renderer.domElement.addEventListener( 'mousedown', this.handleRenderMouseClick );
     viewer.renderer.domElement.addEventListener( 'mousemove', this.handleRenderMouseMove );
-    
+
   }
 
   componentWillUnmount(){
     viewer.renderer.domElement.removeEventListener( 'mousedown', this.handleRenderMouseClick );
     viewer.renderer.domElement.removeEventListener( 'mousemove', this.handleRenderMouseMove );
-    
+
   }
 
   getCameraUnderCursor = (evt) => {
     const raycaster = new THREE.Raycaster();
     const rect = viewer.renderer.domElement.getBoundingClientRect();
     const [x, y] = [evt.clientX, evt.clientY];
-    const array = [ 
-        ( x - rect.left ) / rect.width, 
-        ( y - rect.top ) / rect.height 
+    const array = [
+        ( x - rect.left ) / rect.width,
+        ( y - rect.top ) / rect.height
     ];
     const onClickPosition = new THREE.Vector2(...array);
     const camera = viewer.scene.getActiveCamera();
     const mouse = new THREE.Vector3(
-        + ( onClickPosition.x * 2 ) - 1, 
+        + ( onClickPosition.x * 2 ) - 1,
         - ( onClickPosition.y * 2 ) + 1 );
     raycaster.setFromCamera( mouse, camera );
     const intersects = raycaster.intersectObjects( this.cameraMeshes );
@@ -511,7 +512,7 @@ class ModelView extends React.Component {
         axis.normalize();
         var matrix = new THREE.Matrix4().makeRotationAxis(axis, angle);
         matrix.setPosition(new THREE.Vector3(translation[0], translation[1], translation[2]));
-        
+
         if (scale != 1.0){
             matrix.scale(new THREE.Vector3(scale, scale, scale));
         }
@@ -522,7 +523,7 @@ class ModelView extends React.Component {
     if (this.hasCameras()){
         const colladaLoader = new THREE.ColladaLoader();
         const fileloader = new THREE.FileLoader();
-        
+
         colladaLoader.load('/static/app/models/camera.dae', ( collada ) => {
             const dae = collada.scene;
 
@@ -530,10 +531,10 @@ class ModelView extends React.Component {
                 const geojson = JSON.parse(data);
                 const cameraObj = dae.children[0];
                 cameraObj.material.forEach(m => {
-                    m.transparent = true; 
+                    m.transparent = true;
                     m.opacity = 0.7;
                 });
-                
+
                 // const cameraObj = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshNormalMaterial());
 
                 // TODO: instancing doesn't seem to work :/
@@ -549,7 +550,7 @@ class ModelView extends React.Component {
                     // if (!this.pointCloud.projection) scale = 0.1;
 
                     cameraMesh.matrix.set(...getMatrix(feat.properties.translation, feat.properties.rotation, scale).elements);
-                    
+
                     viewer.scene.scene.add(cameraMesh);
 
                     cameraMesh._feat = feat;
@@ -564,7 +565,7 @@ class ModelView extends React.Component {
 
   setPointCloudsVisible = (flag) => {
     viewer.setEDLEnabled(true);
-    
+
     // Using opacity we can still perform measurements
     viewer.setEDLOpacity(flag ? 1 : 0);
 
@@ -598,7 +599,7 @@ class ModelView extends React.Component {
         this.mtlFilename(mtlPath => {
             mtlLoader.load(mtlPath, (materials) => {
                 materials.preload();
-    
+
                 const objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials(materials);
                 this.objFilePath(filePath => {
@@ -606,12 +607,12 @@ class ModelView extends React.Component {
                         this.loadGeoreferencingOffset((offset) => {
                             object.translateX(offset.x);
                             object.translateY(offset.y);
-            
+
                             viewer.scene.scene.add(object);
-            
+
                             this.modelReference = object;
                             this.setPointCloudsVisible(false);
-            
+
                             this.setState({
                                 initializingModel: false,
                             });
@@ -638,31 +639,31 @@ class ModelView extends React.Component {
 
     return (<div className="model-view">
           <ErrorMessage bind={[this, "error"]} />
-          <div className="container potree_container" 
+          <div className="container potree_container"
              style={{height: "100%", width: "100%", position: "relative"}}
              onContextMenu={(e) => {e.preventDefault();}}>
-                <div id="potree_render_area" 
+                <div id="potree_render_area"
                     ref={(domNode) => { this.container = domNode; }}></div>
                 <div id="potree_sidebar_container"> </div>
           </div>
 
           <div className={"model-action-buttons " + (this.state.modalOpen ? "modal-open" : "")}>
-            <AssetDownloadButtons 
-                            task={this.props.task} 
-                            direction="up" 
+            <AssetDownloadButtons
+                            task={this.props.task}
+                            direction="up"
                             showLabel={false}
                             buttonClass="btn-secondary"
                             onModalOpen={() => this.setState({modalOpen: true})}
                             onModalClose={() => this.setState({modalOpen: false})} />
-            {(this.props.shareButtons && !this.props.public) ? 
-            <ShareButton 
+            {(this.props.shareButtons && !this.props.public) ?
+            <ShareButton
                 ref={(ref) => { this.shareButton = ref; }}
-                task={this.props.task} 
+                task={this.props.task}
                 popupPlacement="top"
                 linksTarget="3d"
             />
             : ""}
-            <SwitchModeButton 
+            <SwitchModeButton
                 public={this.props.public}
                 task={this.props.task}
                 type="modelToMap" />
@@ -673,7 +674,7 @@ class ModelView extends React.Component {
             <ImagePopup feature={selectedCamera._feat} task={task} />
         </div> : ""}
 
-          <Standby 
+          <Standby
             message={_("Loading textured model...")}
             show={this.state.initializingModel}
             />
@@ -703,4 +704,3 @@ $(function(){
 });
 
 export default ModelView;
-    
